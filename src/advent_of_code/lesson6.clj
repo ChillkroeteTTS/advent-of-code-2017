@@ -20,10 +20,12 @@
 (defn redistribute-until [blocks]
   (let [seen (atom #{})]
     (loop [seen #{}
+           seen-id {}
            blocks blocks
            cnt 0]
       (if (contains? seen blocks)
-        cnt
+        {:cnt cnt :loop (- cnt (get seen-id blocks))}
         (recur (conj seen blocks)
+               (assoc seen-id blocks cnt)
                (redistribute blocks)
                (inc cnt))))))

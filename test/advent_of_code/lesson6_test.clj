@@ -15,4 +15,4 @@
   (is (= [2 4 1 2] (l6/redistribute [1 3 4 1]))))
 
 (deftest redistribute-until-test
-  (is (= 5 (l6/redistribute-until [0 2 7 0]))))
+  (is (= {:cnt 5 :loop 4} (l6/redistribute-until [0 2 7 0]))))
