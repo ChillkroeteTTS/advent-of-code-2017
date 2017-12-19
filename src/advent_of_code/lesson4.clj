@@ -1,26 +1,32 @@
 (ns advent-of-code.lesson4
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.set :as set]))
+
+(defn permutations [a-str]
+  (if (= (count a-str) 1)
+    #{a-str}
+    (reduce (fn [agg [lidx letter]]
+              (let [different-letters (keep-indexed (fn [idx _] (when (not= idx lidx) _)) a-str)
+                    combinations (into #{} (mapv #(str letter (str/join %)) (permutations different-letters)))]
+                (set/union agg combinations)))
+            #{}
+            (map-indexed vector a-str))))
 
 (defn valid? [passphrase]
-  (let [splitted (str/split passphrase #"\s")
-        count_splitted (count splitted)]
-    (= count_splitted (count (into #{} splitted)))))
+  (let [words (str/split passphrase #"\s+")]
+    (= (count words) (count (into #{} words)))))
 
-(defn count-valid [passphrases]
-  (count (filter valid? passphrases)))
+(defn valid2? [passphrase]
+  (let [mypermutations (mapv permutations (str/split passphrase #"[\s\t]+"))
+        perm-count (reduce #(+ %1 (count %2)) 0 mypermutations)
+        unified (reduce set/union mypermutations)]
+    (= perm-count (count unified))))
+
+(defn count-fn [passphrases fn]
+  (count (filter fn passphrases)))
 
 (defn read-passphrase-str [passphrase-str]
   (str/split-lines passphrase-str))
 
-
-(defn permutations [a-str]
-  (if (= (count a-str) 1)
-    [a-str]
-    (reduce (fn [agg letter]
-              (let [different-letters (map str (filter #(not= letter %) a-str))
-                    combinations (mapv #(str letter (str/join %)) (permutations different-letters))]
-                (concat agg combinations)))
-            []
-            a-str)))
 
 
